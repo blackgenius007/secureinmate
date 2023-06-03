@@ -35,13 +35,15 @@ if (process.env.NODE_ENV === 'development') {
 // Route files
 const auth = require('./routes/auth');
 const authV2 = require('./routes/authV2');
-const inmate = require('./routes/inmateRoutes')
-const errorHandler =require('./middleware/error')
+const inmate = require('./routes/inmateRoutes');
+const images = require('./routes/imagesRoutes')
+const errorHandler =require('./middleware/error');
 
 //mount routers  
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/authV2', authV2);
 app.use('/api/v1/inmate', inmate);
+app.use('/api/v1/images', images);
 app.use(errorHandler);
 
 // Serve frontend
