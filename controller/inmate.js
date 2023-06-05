@@ -14,7 +14,7 @@ exports.createNewInmate = asyncHandler(async (req, res, next) => {
   console.log(req.body);
   console.log(req.params.id);
   const _id = req.params.id;
-  const { inmate_name, offence_category, gender, date_of_birth, ethnicity, social_security, phone_number, height, weight, eye_color, hair_color, scar, medical_condition, disability, id_number, bookingDate, booking_officer, arrest_oficer, booking_time, arresting_agency, arrest_location, arrest_time, arrestDate, verdict, sentencing_court, belongings, ImagePath, fingerprint, endDate, isActive } = req.body;
+  const { inmate_name, offence_category, gender, date_of_birth, ethnicity, social_security, phone_number, height, weight, eye_color, hair_color, scar, medical_condition, disability, id_number, bookingDate, booking_officer, arrest_oficer, nok_name, nok_addy, nok_contact, booking_time, arresting_agency, arrest_location, arrest_time, arrestDate, verdict, sentencing_court, belongings, ImagePath, fingerPrint, endDate, isActive } = req.body;
 
   try {
     console.log('request from front =>', req.body);
@@ -52,6 +52,9 @@ exports.createNewInmate = asyncHandler(async (req, res, next) => {
       medical_condition: medical_condition,
       disability: disability,
       id_number: id_number,
+      nok_name:  nok_name,
+      nok_addy:  nok_addy,
+      nok_contact: nok_contact,
       bookingDate: bookingDate,
       booking_officer: booking_officer,
       arrest_officer: arrest_officer,
