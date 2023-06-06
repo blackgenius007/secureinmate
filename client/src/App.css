@@ -165,7 +165,7 @@ p {
 }
 
 button {
-  padding: 12px 19px;
+  padding: 16px 24px;
   background:transparent;
   color:#fff;
   border: 2px solid white;
@@ -210,3 +210,34 @@ button:hover {
 }
 
 
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffff;
+  width: 150px;
+  padding: 10px;
+  padding-top: 10px;
+  border: 1px solid #808080;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu li {
+  margin-bottom: 10px;
+}
+
+.menu li button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.menu li.active button {
+  font-weight: bold;
+}

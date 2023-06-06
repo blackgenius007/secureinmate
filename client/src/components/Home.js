@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { register, reset } from './Authentication/Features/auth/authSlice';
+import React, { useState, useEffect, Fragment } from 'react';
+import {
+  login,
+  register,
+  } from './Authentication/Features/auth/authSlice';
 import { useSelector, useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import {Navigate,useNavigate,useHistory } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Container from '@mui/material/Container';
@@ -51,8 +54,12 @@ const inputContainerStyle = {
 
 const Home = () => {
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState(false);
+   const [open, setOpen] = React.useState(false);
   const [openReg, setOpenReg] = React.useState(false);
+  const [userLogin, setLogin] = useState({
+    email: '',
+    password: '',
+  });
   const [registrationData, setRegistrationData] = useState({
     name: '',
     penitent: '',
@@ -60,7 +67,13 @@ const Home = () => {
     password: '',
     confirmPassword: '',
   });
-  const [error, setError] = useState('');
+
+
+  const dispatch = useDispatch();
+
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth
+  );
 
   const handleRegisterOpen = () => {
     setOpenReg(true);
@@ -77,42 +90,74 @@ const Home = () => {
     setOpenReg(false);
   };
 
-  const handleChange = (e) => {
-    toast('Login initiated');
+  const handleLoginChange = (e) => {
+    const { name, value } = e.target;
+    setLogin((userLogin) => ({ ...userLogin, [name]: value }));
   };
 
+  // onchange for registration
   const handleRegisterChange = (e) => {
-    alert('alert...')
     setRegistrationData({
       ...registrationData,
       [e.target.name]: e.target.value,
     });
   };
-  const handleSubmit = (event) => {
-    event.preventDefault();
 
+  const handleSubmitLogin = (e) => {
+   
+console.log(userLogin)
+    // Login API
+    dispatch(login(userLogin));
+       if (isSuccess || user) {
+      navigate('/dashboard');
+}
+  };
+
+  // useEffect(() => {
+  //   if (isError) {
+  //    alert(message)
+  //   }
+
+  //   if (isSuccess || user) {
+  //     navigate('/dashboard');
+  //     // alert('Loggedin...')
+  //   }
+
+   
+  // }, [user, isError, isSuccess,message, isLoading,dispatch,navigate])
+
+ 
+
+
+  // Submit registration form
+  const handleSubmitRegister = (event) => {
     // Check if all required fields are filled
     if (
       !registrationData.name ||
       !registrationData.email ||
+      !registrationData.penitent ||
       !registrationData.password ||
       !registrationData.confirmPassword
     ) {
-      setError('Please fill in all required fields');
+      handleCloseReg();
+      Swal.fire('Please fill in all required fields');
       return;
     }
 
     // Check if passwords match
     if (registrationData.password !== registrationData.confirmPassword) {
-      setError('Passwords do not match');
+      handleCloseReg();
+      Swal.fire({
+        icon: 'error',
+        title: '',
+        text: 'Passwords do not match!',
+        footer: '',
+      });
       return;
     }
 
-    // Proceed with registration
-    setError('');
-
-    // Your registration logic here
-    console.log(registrationData);
+    // registration API
+    dispatch(register(registrationData));
   };
 
   return (
@@ -126,10 +171,9 @@ const Home = () => {
         <button type="button" onClick={handleClickOpen}>
           LOGIN
         </button>
-        <button type="button" onClick={handleRegisterOpen}>
+        {/* <button type="button" onClick={handleRegisterOpen}>
           SIGN UP
-        </button>
-              
+        </button> */}
 
         <Dialog
           open={open}
@@ -164,12 +208,7 @@ const Home = () => {
                 <Typography component="h1" variant="h5">
                   Sign in
                 </Typography>
-                <Box
-                  component="form"
-                  onSubmit={handleSubmit}
-                  noValidate
-                  sx={{ mt: 1, width: '100%' }}
-                >
+                <Box component="form" noValidate sx={{ mt: 1, width: '100%' }}>
                   <TextField
                     margin="normal"
                     required
@@ -179,6 +218,7 @@ const Home = () => {
                     name="email"
                     autoComplete="email"
                     autoFocus
+                   onChange={handleLoginChange} 
                   />
                   <TextField
                     margin="normal"
@@ -189,16 +229,18 @@ const Home = () => {
                     type="password"
                     id="password"
                     autoComplete="current-password"
+                    onChange={handleLoginChange} 
                   />
                   <FormControlLabel
                     control={<Checkbox value="remember" color="primary" />}
                     label="Remember me"
                   />
                   <Button
-                    type="submit"
+                    type="button"
                     fullWidth
                     variant="contained"
                     sx={{ mt: 3 }}
+                    onClick={() => handleSubmitLogin()}
                   >
                     Sign In
                   </Button>
@@ -258,7 +300,7 @@ const Home = () => {
               <Grid
                 container
                 component="form"
-                onSubmit={handleSubmit}
+                // onSubmit={handleSubmit}
                 noValidate
                 style={formContainerStyle}
               >
@@ -268,23 +310,24 @@ const Home = () => {
                       margin="normal"
                       required
                       fullWidth
-                      id="name"
+                      id="user_name"
                       label="Full Name"
-                      name="name"
-                      autoComplete="name"
+                      name="user_name"
+                      autoComplete="user_name"
                       autoFocus
-                      onChange={ handleRegisterChange}
+                      onChange={handleRegisterChange}
+
                     />
                     <TextField
                       margin="normal"
                       required
                       fullWidth
-                      id="penitent"
+                      id="Penitentiary"
                       label="Penitentiary name"
-                      name="penitent"
-                      autoComplete="penitent"
+                      name="Penitentiary"
+                      autoComplete="Penitentiary"
                       autoFocus
-                      onChange={ handleRegisterChange}
+                      onChange={handleRegisterChange}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6} style={inputContainerStyle}>
@@ -297,7 +340,7 @@ const Home = () => {
                       type="password"
                       id="password"
                       autoComplete="current-password"
-                      onChange={ handleRegisterChange}
+                      onChange={handleRegisterChange}
                     />
                     <TextField
                       margin="normal"
@@ -308,7 +351,7 @@ const Home = () => {
                       type="password"
                       id="confirmPassword"
                       autoComplete="new-password"
-                      onChange={ handleRegisterChange}
+                      onChange={handleRegisterChange}
                     />
                   </Grid>
                   <Grid item xs={12} style={inputContainerStyle}>
@@ -321,15 +364,16 @@ const Home = () => {
                       type="email"
                       id="email"
                       autoComplete="email"
-                      onChange={ handleRegisterChange}
+                      onChange={handleRegisterChange}
                     />
                   </Grid>
                 </Grid>
                 <Button
-                  type="submit"
+                  // type="submit"
                   fullWidth
                   variant="contained"
                   sx={{ mt: 3 }}
+                  onClick={() => handleSubmitRegister()}
                 >
                   Submit
                 </Button>

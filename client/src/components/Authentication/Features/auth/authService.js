@@ -1,7 +1,10 @@
-import axios from 'axios'
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 
 const API_URL_R = '/api/v1/authV2/registerV2'
 const API_URL_L = '/api/v1/authV2/loginV2'
+
 
 // Register user
 const register = async (FormData) => {
@@ -27,9 +30,10 @@ const login = async (userData) => {
 }
 
 // Logout user
-const logout = () => {
-  localStorage.removeItem('user')
-}
+const logout = (navigate) => {
+  localStorage.removeItem('user');
+  navigate('/'); // Redirect to home route
+};
 
 const authService = {
   register,
