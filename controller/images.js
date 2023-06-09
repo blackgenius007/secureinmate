@@ -11,7 +11,7 @@ const cloudinary = require('../utils/cloudinary.js');
 //@acess Private
 exports.InmatePhotos = asyncHandler(async (req, res, next) => {
     const _id = req.params.id;
-    console.log('Inmate details=>', _id, facility_name);
+    console.log('Inmate details=>', _id);
   
     //check for existing image
   Inmate.findOne({ _id }, function (err, id) {
@@ -42,11 +42,10 @@ exports.InmatePhotos = asyncHandler(async (req, res, next) => {
           } else {
             // If Success
             const { secure_url, public_id, original_filename } = result;
-            Employee.findOneAndUpdate(
-              {
+            Inmate.findOneAndUpdate(
+              { 
                 _id: _id,
-                facility_name: facility_name,
-              },
+                },
               { $set: { imagePath: secure_url, public_id: public_id } },
               {
                 new: true,
@@ -73,7 +72,7 @@ exports.InmatePhotos = asyncHandler(async (req, res, next) => {
            Inmate.findOneAndUpdate(
               {
                 _id: _id,
-                facility_name: facility_name,
+             
               },
               { $set: { imagePath: secure_url, public_id: public_id } },
               {

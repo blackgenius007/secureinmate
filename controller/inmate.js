@@ -224,8 +224,8 @@ exports.getAllInmate = asyncHandler(async (req, res, next) => {
 //@acess  Private
 exports.getOneInmate = asyncHandler(async (req, res, next) => {
   try {
-    const num = req.params.num;
-    const InmateDetail = await Inmate.findOne({ inmate_number: num });
+    const _id = req.params.id;
+    const InmateDetail = await Inmate.findOne({ _id });
 
     if (!InmateDetail) {
       const error = new ErrorResponse('Inmate not found', 404);

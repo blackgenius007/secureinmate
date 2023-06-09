@@ -165,7 +165,10 @@ console.log(userLogin)
       <h1>
         SECUREINMATE
         <br />
-        <p></p>
+        <br />
+        <p style={{ textTransform: 'lowercase' }}>
+          <span style={{ fontSize: '34px', fontFamily: 'cursive' }}>Find an inmate! </span>
+        </p>
       </h1>
       <div className="button-group">
         <button type="button" onClick={handleClickOpen}>

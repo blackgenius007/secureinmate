@@ -15,7 +15,7 @@ const {
 
  router.route('/create/:id').post(createNewInmate);
  router.route('/inmates').get(getAllInmate);
- router.route('/detail/:num').get(getOneInmate);
+ router.route('/detail/:id').get(getOneInmate);
  router.route('/update/:num/').post(updateInmate);
  router.route('/delete/:num').delete(deleteInmate);
 

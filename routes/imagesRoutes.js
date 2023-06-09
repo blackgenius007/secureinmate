@@ -22,7 +22,7 @@ const storage = new CloudinaryStorage({
 });
 
 const profileImgUpload = multer({
-  storage: storage,
+    storage: storage,
 });
 
 const {
@@ -31,7 +31,7 @@ const {
 } = require('../controller/images');
 
 router
-  .route('/employee/:id/:projectname')
+  .route('/inmate/:id')
   .post(profileImgUpload.single('images'), InmatePhotos);
 
 

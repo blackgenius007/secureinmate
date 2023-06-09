@@ -22,7 +22,7 @@ import { faCog } from '@fortawesome/free-solid-svg-icons';
 
 
 
-const pages = ['Services', 'Pricing'];
+const pages = ['About','Services', 'Pricing'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function ResponsiveAppBar() {
