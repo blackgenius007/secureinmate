@@ -14,7 +14,7 @@ exports.createNewInmate = asyncHandler(async (req, res, next) => {
   console.log(req.body);
   console.log(req.params.id);
   const _id = req.params.id;
-  const {
+const {
     inmate_name,
     dateOfBirth,
     gender,

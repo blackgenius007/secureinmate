@@ -7,7 +7,7 @@ const InmateSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    Penitentiary: {
+Penitentiary: {
       type: String,
       required: false,
     },
@@ -15,20 +15,19 @@ const InmateSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    offence_category: {
+       offence_category: {
       type: String,
-      required: false,
+      required: true,
     },
     gender: {
       type: String,
-      required: false,
+      required: true,
     },
-    
      reg_officer: {
       type: String,
       required: false,
     },
-    id_number: {
+   id_number: {
       type: String,
       required: false,
     },
