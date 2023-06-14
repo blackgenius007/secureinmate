@@ -11,7 +11,7 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { ButtonBase } from '@mui/material';
 import TablePagination from '@mui/material/TablePagination';
-import { retrieveAllInmates } from '../InmateServices/inmateSlice';
+import { retrieveAllInmates,deleteInmateById } from '../InmateServices/inmateSlice';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -25,11 +25,14 @@ import { Typography, Chip, Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import Edit from '@mui/icons-material/Edit';
+import Delete from '@mui/icons-material/Delete';
 import PropTypes from 'prop-types';
 import Avatar from '@mui/material/Avatar';
 import UploadPhoto from './uploadPhoto';
 import { Popup } from 'semantic-ui-react';
 import face from '../../assets/img/face-0.jpg';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 
@@ -74,11 +77,12 @@ BootstrapDialogTitle.propTypes = {
 
 const FilterableTable = () => {
  
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { inmates, isLoading, isError, message } = useSelector(
     (state) => state.inmates
   );
+ 
   const [searched, setSearched] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -87,51 +91,105 @@ const FilterableTable = () => {
   const [selectedInmate, setSelectedInmate] = useState(null);
   const [isUploadVisible, setUploadVisible] = useState(false);
   const hiddenFileInput = React.useRef(null);
-  const [url, setUrl] = useState('');
-  const [inmate, setInmate] = useState('');
+  const [resume, setResume] = useState({});
+  const [url, setUrl] = useState({});
+  const [uploadedFile, setUploadedFile] = useState({});
   const [preview, setPreview] = useState(false);
-
-  const [isActive, setIsActive] = useState(false);
+  const [avatar, setAvatar] = useState(false);
 
   // Photo onChanged function
-  const handleClick = () => {
+  const handleClick = (event) => {
     hiddenFileInput.current.click();
   };
-
   const handleChange = (event) => {
     const fileUploaded = event.target.files[0];
     const url = URL.createObjectURL(fileUploaded);
     setUrl(url);
-    setInmate(fileUploaded);
+    setResume(fileUploaded);
+    console.log(fileUploaded.name);
+    console.log(fileUploaded);
+    console.log(resume);
     setPreview(true);
   };
-
   // function to upload inmate picture
-  const onSubmitPhoto = (event) => {
-     event.preventDefault();
-    const formData = new FormData();
-    formData.append('images', inmate);
-    setIsActive(true);
-    if (formData && inmate) {
-      dispatch({ type: 'SET_LOADING', payload: true });
-      axios
-        .post(`/api/v1/images/inmate/${selectedInmate._id}`, formData)
-        .then(
-          (res) => {
-            alert('Submitted successfully!');
-            setIsActive(true);
-          },
-          (err) => {
-            if (err.response.status === 500) alert(err.response.data);
-          }
-        )
-        .finally(() => {
-          dispatch({ type: 'SET_LOADING', payload: false });
-        });
-    } else {
-      alert('Please select a file!');
+  const onSubmitPhoto = async () => {
+    try {
+      if (resume) {
+        const formData = new FormData();
+        formData.append('image', resume, resume.name);
+
+        const response = await axios.post(`/api/v1/images/${selectedInmate._id}`, formData);
+        console.log('Server response:');
+        console.log(response.data);
+
+        // Handle success scenario
+        alert('Uploaded successfully');
+      } else {
+        alert('Please select an image');
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
+  
+
+  // const onSubmitPhoto = (event) => {
+  //   event.preventDefault();
+  //   const formData = new FormData();
+  //   console.log(resume);
+  //   formData.append('images', resume);
+  //   console.log(formData);
+    
+  //   if (formData && resume) {
+  //     axios.post(`/api/v1/images/${selectedInmate._id}`, formData).then(
+  //       (res) => {
+  //         alert('Submitted successfully!');
+  //         setAvatar(true);
+             
+  //       },   
+
+  //       (err) => {
+  //         // alert('An error occured! Try submitting the form again.', err);
+  //         if (err.response.status === 500) alert(err.response.data);
+  //       }
+  //     );
+  //     console.log(resume, formData);
+  //   } else {
+  //     alert('Please select a file!');
+  //   }
+  // };
+
+
+
+  // const onSubmitPhoto = (event) => {
+  //   event.preventDefault();
+  //   const formData = new FormData();
+  //   console.log(selectedInmate._id);
+  //   formData.append('streamfile', inmate);
+  //   console.log(formData);
+  //   setIsActive(true);
+  //   if (formData && inmate) {
+  //     axios.post(`/api/v1/images/inmate/${selectedInmate._id}`, formData).then(
+  //       (res) => {
+  //         alert('Submitted successfully!');
+      
+          
+  //       },   
+
+  //       (err) => {
+  //         // alert('An error occured! Try submitting the form again.', err);
+  //         if (err.response.status === 500) alert(err.response.data);
+  //       }
+  //     );
+  //     console.log(inmate, formData);
+  //   } else {
+  //     alert('Please select a file!');
+  //   }
+  // };
+
+
+
+
  
  // Toggle function
   const toggleUpload = () => {
@@ -166,7 +224,17 @@ const FilterableTable = () => {
     );
   });
 
- 
+  // function handles update
+  const handleUpdate = (inmateId) => {
+    navigate(`/inmates-update/${inmateId}`);
+  };
+
+ // function handles delete
+const handleDelete=(id)=>{
+  dispatch(deleteInmateById(id));
+
+  // function opens Dialog
+}
   const handleOpenDialog = (inmate) => {
     // Open the dialog and pass the inmate data
     setOpenDialog(true);
@@ -223,23 +291,16 @@ const FilterableTable = () => {
           <Table aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell align="right">Number</TableCell>
-                {/* <TableCell align="right">Gender</TableCell> */}
-                {/* <TableCell align="right">Ethnicity</TableCell> */}
-                <TableCell align="right">Social_security</TableCell>
-                {/* <TableCell align="right">Height</TableCell>
-                <TableCell align="right">Weight</TableCell> */}
-                {/* <TableCell align="right">Eye color</TableCell>
-                <TableCell align="right">Hair color</TableCell> */}
-                {/* <TableCell align="right">Scar</TableCell> */}
-                {/* <TableCell align="right">Disability</TableCell> */}
+                <TableCell align="left" style={{color:'blue'}}><small><i>Click on inmate name for details</i></small></TableCell>
+              <TableCell align="right">inmate</TableCell> 
+                {/* <TableCell align="right">Social_security</TableCell> */}
                 <TableCell align="right">Booking Date</TableCell>
                 <TableCell align="right">Booking Officer</TableCell>
                 <TableCell align="right">Booking Time</TableCell>
                 <TableCell align="right">Arrest location</TableCell>
                 <TableCell align="right">Verdict</TableCell>
                 <TableCell align="right">Belongings</TableCell>
+                <TableCell align="right">Action</TableCell>
 
                 {/* Add more table headers for additional inmate properties */}
               </TableRow>
@@ -255,22 +316,18 @@ const FilterableTable = () => {
                       {row.inmate_name}
                     </ButtonBase>
                   </TableCell>
-                  <TableCell align="right">{row.inmate_number}</TableCell>
-                  {/* <TableCell align="right">{row.gender}</TableCell> */}
-                  {/* <TableCell align="right">{row.ethnicity}</TableCell> */}
-                  <TableCell align="right">{row.social_security}</TableCell>
-                  {/* <TableCell align="right">{row.height}</TableCell>
-                  <TableCell align="right">{row.weight}</TableCell> */}
-                  {/* <TableCell align="right">{row.eye_color}</TableCell>
-                  <TableCell align="right">{row.hair_color}</TableCell> */}
-                  {/* <TableCell align="right">{row.scar}</TableCell>
-                  <TableCell align="right">{row.disability}</TableCell> */}
+                  <TableCell align="right"><Avatar alt="Remy Sharp" src={row.imagePath} /></TableCell>
+                  {/* <TableCell align="right">{row.social_security}</TableCell> */}
                   <TableCell align="right">{row.bookingDate}</TableCell>
-                  <TableCell align="right">{row.booking_officer}</TableCell>
+                  <TableCell align="right">{row.reg_officer}</TableCell>
                   <TableCell align="right">{row.booking_time}</TableCell>
                   <TableCell align="right">{row.arrest_location}</TableCell>
-                  <TableCell align="right">{row.verdict}</TableCell>
+                  <TableCell align="right">{row.offence_category}</TableCell>
                   <TableCell align="right">{row.belongings}</TableCell>
+                  <TableCell align="right">
+              <Edit onClick={() => handleUpdate(row._id)} /> {/* Edit icon with onClick handler */}
+              <Delete onClick={() => handleDelete(row._id)} /> {/* Delete icon with onClick handler */}
+            </TableCell>
 
                   {/* <TableCell component="th" scope="row">
                     {row.inmate_name}
@@ -280,7 +337,7 @@ const FilterableTable = () => {
                   {/* Display more inmate properties in the respective table cells */}
                 </TableRow>
               ))}
-            </TableBody>
+               </TableBody>
           </Table>
         </TableContainer>
       </Box>
@@ -300,12 +357,12 @@ const FilterableTable = () => {
     <Box display="flex" alignItems="center" marginBottom={2}>
       <Avatar
         alt={selectedInmate.inmate_name}
-        src={selectedInmate.avatar_url}
+        src={selectedInmate.imagePath}
         sx={{ width: 100, height: 100, marginRight: 2 }}
       />
       <Box>
         <Typography variant="body1" gutterBottom style={{ color: 'grey' }}>
-          Age: {selectedInmate.age}
+          Age: {selectedInmate.date_of_birth}
         </Typography>
         <Typography variant="body1" gutterBottom style={{ color: 'grey' }}>
           Ethnicity: {selectedInmate.ethnicity}
@@ -318,6 +375,12 @@ const FilterableTable = () => {
         </Typography>
         <Typography variant="body1" gutterBottom style={{ color: 'grey' }}>
           Gender: {selectedInmate.gender}
+        </Typography>
+        <Typography variant="body1" gutterBottom style={{ color: 'grey' }}>
+          SSN: {selectedInmate.social_security}
+        </Typography>
+        <Typography variant="body1" gutterBottom style={{ color: 'grey' }}>
+          Inmate Nos: {selectedInmate.inmate_number}
         </Typography>
       </Box>
     </Box>
@@ -363,12 +426,12 @@ const FilterableTable = () => {
           <img src={face} width="80px" height="80px" alt="" />
         )}
         <input
-          type="file"
-          name="images"
-          accept=".jpg, .png, .jpeg"
-          ref={hiddenFileInput}
-          onChange={handleChange}
-          style={{ display: 'none' }}
+    type="file"
+    name="images"
+    accept=".jpg,.png,.jpeg"
+    ref={hiddenFileInput}
+    onChange={handleChange}
+    style={{ display: 'none' }}
         />
       </label>
       <Button variant="contained" color="primary" onClick={onSubmitPhoto} >

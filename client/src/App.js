@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import ResponsiveAppBar from './components/Navbar';
-import DrawerAppBar from './components/Navbar2';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import authService from './components/Authentication/Features/auth/authService';
+import Navbar2 from './components/Navbar2';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
@@ -21,18 +21,30 @@ import About from './components/About';
 import ServicesSection from './components/ServiceCards'
 import Services from './components/Services';
 import Pricing from './components/Pricing';
+import FeatureSection from './components/FeaturesSection/features';
 import Footer from './components/Footer/footer';
+import HighlightSection from './components/Footer/HighlightSection'
+import Header from './components/Header/Header.js';
+import ImageSlider from './components/Carousel';
 import Contact from './components/Footer/contact';
 import Dashboard from './components/Dashboard/dashboard';
+import InmateUpdateForm from './components/Inmate/inmateUpdateForm'
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import './App.css';
 
 function App() {
   const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
   const [state, setState] = useState({
     browseOpen: false,
   });
+
+  const handleLogout =()=>{
+    authService.logout(navigate);
+      // Refresh the window after logout
+      // window.location.reload();
+  }
 
   const location = useLocation();
   const isHomeRoute = location.pathname === '/';
@@ -49,34 +61,35 @@ function App() {
     <Box
       sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
       role="presentation"
-      onClick={toggleDrawer(anchor, false)}
-      onKeyDown={toggleDrawer(anchor, false)}
     >
       {/* Sidebar content */}
-      
       <List>
-  {[
-    { text: 'Dashboard', path: 'dashboard' },
-    { text: 'Create new Inmate', path: 'new' },
-    { text: 'View Inmates', path: 'inmates' },
-    'Starred',
-    'Send email',
-    'Drafts'
-  ].map((item, index) => (
-    <ListItem key={index} disablePadding>
-      <ListItemButton component={Link} to={`/${item.path}`}>
-        <ListItemIcon>
-          {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-        </ListItemIcon>
-        <ListItemText primary={item.text || item} />
-      </ListItemButton>
-    </ListItem>
-  ))}
-</List>
+        {[
+          { text: 'Dashboard', path: 'dashboard' },
+          { text: 'Create new Inmate', path: 'new' },
+          { text: 'View Inmates', path: 'inmates' },
+          { text: 'Profile', path: 'profile' },
+          'Settings',
+        ].map((item, index) => (
+          <ListItem key={index} disablePadding>
+            <ListItemButton component={Link} to={`/${item.path}`}>
+              <ListItemIcon>
+                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+              </ListItemIcon>
+              <ListItemText primary={item.text || item} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
       <Divider />
       <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem key={text} disablePadding>
+        {['Subscription', 'Users', 'Logout'].map((text, index) => (
+          <ListItem
+            key={text}
+            disablePadding
+            onClick={text === 'Logout' ? handleLogout : undefined}
+            button
+          >
             <ListItemButton component={Link} to={`/${text.toLowerCase()}`}>
               <ListItemIcon>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
@@ -91,7 +104,9 @@ function App() {
 
   return (
     <div className="App">
-      <ResponsiveAppBar />
+      <Header/>
+      <Navbar2/>
+ 
           {user && !isHomeRoute && (
         <div className="sidebar">
           <React.Fragment key="Browse">
@@ -101,7 +116,7 @@ function App() {
               <Button onClick={toggleDrawer('browseOpen', true)}>Browse</Button>
             )}
           </React.Fragment>
-       
+
           <Drawer
             anchor="left"
             open={state.browseOpen}
@@ -109,10 +124,10 @@ function App() {
           >
             {list('left')}
           </Drawer>
-         
+
         </div>
       )}
-
+ <div className="main-content">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="about" element={<About/>} />
@@ -122,17 +137,19 @@ function App() {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="new" element={<InmateForm />} />
         <Route path="inmates" element={<Inmates />} />
+        <Route path="/inmates-update/:id" element={<InmateUpdateForm />} />
       </Routes>
-      <div style={{ height: '200px', background: 'lightgray', marginTop: '0px' }}>
-      <ServicesSection/>
-      <Contact />
+      </div>
+      <div className="footer">
+      <div >
+      <br/>
+      <br/>
+    
+         <Contact />
+      </div>
       </div>
     </div>
   );
 }
 
 export default App;
-
-
-
-

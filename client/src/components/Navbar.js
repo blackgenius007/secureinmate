@@ -9,35 +9,28 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import { useSelector, useDispatch } from 'react-redux';
 import authService from './Authentication/Features/auth/authService';
-import {Navigate,useNavigate,useHistory } from 'react-router-dom';
+import { Navigate, useNavigate, useHistory } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Link } from 'react-router-dom';
-import  MyImage from '../assets/img/bars.png';
-import {logout,reset} from './Authentication/Features/auth/authSlice';
+import MyImage from '../assets/img/bars.png';
+import { logout, reset } from './Authentication/Features/auth/authSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
 
-
-
-const pages = ['About','Services', 'Pricing'];
+const pages = ['About', 'Services', 'Pricing'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function ResponsiveAppBar() {
-  const {user} = useSelector(
-    (state) => state.auth
-  );
+  const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-
-
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
-
   };
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -55,17 +48,12 @@ function ResponsiveAppBar() {
 
   const handleLogout = () => {
     authService.logout(navigate);
-   
-      };
-  
-
-
+  };
 
   return (
-    <AppBar position="static">
+    <AppBar position="fixed" style={{ backgroundColor: 'white', boxShadow: 'none' }}>
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
+        <Toolbar disableGutters style={{ boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)' }}>
           <img src={MyImage} alt="logo" style={{ maxHeight: '35px' }} />
           <Typography
             variant="h6"
@@ -78,12 +66,10 @@ function ResponsiveAppBar() {
               fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
-              color: 'inherit',
+              color: 'grey',
               textDecoration: 'none',
             }}
-          >
-          
-          </Typography>
+          ></Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
@@ -117,7 +103,9 @@ function ResponsiveAppBar() {
               {pages.map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
                   <Typography textAlign="center">
-                    <Link style={{textDecoration:'none',color:'white'}} to ={`/${page}`}>{page}</Link>
+                    <Link style={{ textDecoration: 'none', color: 'grey' }} to={`/${page}`}>
+                      {page}
+                    </Link>
                   </Typography>
                 </MenuItem>
               ))}
@@ -136,7 +124,7 @@ function ResponsiveAppBar() {
               fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
-              color: 'inherit',
+              color: 'grey',
               textDecoration: 'none',
             }}
           >
@@ -147,23 +135,26 @@ function ResponsiveAppBar() {
               <Button
                 key={page}
                 onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                sx={{ my: 2, color: 'grey', display: 'block' }}
               >
-                 <Link style={{textDecoration:'none',color:'white'}} to ={`/${page}`}>{page}</Link>
-              
+                <Link style={{ textDecoration: 'none', color: 'grey' }} to={`/${page}`}>
+                  {page}
+                </Link>
               </Button>
             ))}
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
+            {user ? (
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <FontAwesomeIcon icon={faCog} style={{ color: 'grey' }} />
+                </IconButton>
+              </Tooltip>
+            ) : (
+              'SECUREINMATE'
+            )}
 
-{user ?<Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <FontAwesomeIcon icon={faCog} style={{ color: 'white' }} />
-              </IconButton>
-            </Tooltip>:'SECUREINMATE' }
-
-            
             <Menu
               sx={{ mt: '45px' }}
               id="menu-appbar"
@@ -181,28 +172,28 @@ function ResponsiveAppBar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-       <MenuItem key={setting} onClick={handleCloseUserMenu}>
-       <Typography
-         textAlign="center"
-         style={{
-           color: setting === 'Logout' ? 'black' : 'inherit',
-           '&:hover': {
-             backgroundColor: 'transparent',
-             textDecoration: 'none',
-           },
-         }}
-       >
-         {setting === 'Logout' ? (
-           <button onClick={handleLogout} style={{ color: 'black', textDecoration: 'none' }}>
-             {setting}
-           </button>
-         ) : (
-           <Link to={`/${setting.toLowerCase()}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-             {setting}
-           </Link>
-         )}
-       </Typography>
-     </MenuItem>
+                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                  <Typography
+                    textAlign="center"
+                    style={{
+                      color: setting === 'Logout' ? 'black' : 'inherit',
+                      '&:hover': {
+                        backgroundColor: 'transparent',
+                        textDecoration: 'none',
+                      },
+                    }}
+                  >
+                    {setting === 'Logout' ? (
+                      <button onClick={handleLogout} style={{ color: 'black', textDecoration: 'none' }}>
+                        {setting}
+                      </button>
+                    ) : (
+                      <Link to={`/${setting.toLowerCase()}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                        {setting}
+                      </Link>
+                    )}
+                  </Typography>
+                </MenuItem>
               ))}
             </Menu>
           </Box>
@@ -211,4 +202,5 @@ function ResponsiveAppBar() {
     </AppBar>
   );
 }
+
 export default ResponsiveAppBar;

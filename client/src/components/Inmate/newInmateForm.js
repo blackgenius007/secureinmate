@@ -36,7 +36,7 @@ const smallInputStyle = {
 const NewInmates = () => {
   const initialValues = {
     inmate_name: '',
-    dateOfBirth: '',
+    date_of_birth: '',
     gender: '',
     socialSecurityNumber: '',
     raceEthnicity: '',
@@ -45,8 +45,8 @@ const NewInmates = () => {
     contactInformation: '',
     height: '',
     weight: '',
-    eyeColor: '',
-    hairColor: '',
+    eye_color: '',
+    hair_color: '',
     distinguishingMarks: '',
     disabilities: '',
     bookingDateTime: '',
@@ -54,7 +54,7 @@ const NewInmates = () => {
     bookingOfficer: '',
     arrestingAgency: '',
     arrestingOfficer: '',
-    reasonForArrest: '',
+    offence_category: '',
     arrestDate: '',
     arrestLocation: '',
     arrestJurisdiction: '',
@@ -76,7 +76,7 @@ const NewInmates = () => {
   };
   return (
     <Fragment>
-      <h2 style={{ color: 'blue' }}>NEW INMATE BOOKING FORM</h2>
+      <h2 className='headfont' style={{ color: 'grey' }}>NEW INMATE BOOKING FORM</h2>
       <Formik initialValues={initialValues} onSubmit={handleSubmit}>
         <Form>
         {/* {message && (
@@ -100,27 +100,27 @@ const NewInmates = () => {
                     label="Full Name"
                     name="inmate_name"
                   />
-
-                  <TextField
-                    id="date"
-                    label="Birthday"
-                    type="date"
-                    name="birthday"
-                    defaultValue="2017-05-24"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    sx={{ width: '100%', height: '20%' }} // Adjust the width as per your requirement
+                  <Field
+                    as={TextField}
+                    variant="outlined"
+                    size="small"
+                    fullWidth
+                    id="date_of_birth"
+                    label="Age"
+                    name="date_of_birth"
                   />
-                  {/* <Field
-                  as={TextField}
-                  variant="outlined"
-                  size="small"
-                  fullWidth
-                  id="dateOfBirth"
-                  label="Date of Birth"
-                  name="dateOfBirth"
-                /> */}
+{/* <TextField
+  id="date_of_birth"
+  label="Birthday"
+  type="date"
+  name="date_of_birth" // Updated name attribute
+  defaultValue="2017-05-24"
+  InputLabelProps={{
+    shrink: true,
+  }}
+  sx={{ width: '100%', height: '20%' }} // Adjust the width as per your requirement
+/> */}
+             
                   <Field
                     as={TextField}
                     variant="outlined"
@@ -202,18 +202,18 @@ const NewInmates = () => {
                     variant="outlined"
                     size="small"
                     fullWidth
-                    id="eyeColor"
+                    id="eye_color"
                     label="Eye Color"
-                    name="eyeColor"
+                    name="eye_color"
                   />
                   <Field
                     as={TextField}
                     variant="outlined"
                     size="small"
                     fullWidth
-                    id="hairColor"
+                    id="hair_color"
                     label="Hair Color"
-                    name="hairColor"
+                    name="hair_color"
                   />
                   <Field
                     as={TextField}
@@ -287,19 +287,19 @@ const NewInmates = () => {
                     variant="outlined"
                     size="small"
                     fullWidth
-                    id="reasonForArrest"
+                    id="offence_category"
                     label="Reason for Arrest"
-                    name="reasonForArrest"
+                    name="offence_category"
                   />
-                  <Field
-                    as={TextField}
-                    variant="outlined"
-                    size="small"
-                    fullWidth
-                    id=" arrestDate"
-                    label="Arrest Date and Time"
-                    name=" arrestDate"
-                  />
+                 <Field
+  as={TextField}
+  variant="outlined"
+  size="small"
+  fullWidth
+  id="arrestDate"
+  label="Arrest Date and Time"
+  name="arrestDate" // Updated name attribute
+/>
                   <Field
                     as={TextField}
                     variant="outlined"

@@ -16,11 +16,11 @@ function Inmates() {
   return (
     <Fragment>
 <div>
-  <h1 style={{ fontSize: '24px', fontWeight: 'bold', textAlign: 'center',color:'grey' }}>
-    INMATE DATABASE FOR {user.data.Penitentiary} CORRECTIONAL CENTRE
+  <h1 style={{ fontSize: '35px',  textAlign: 'center',color:'grey' }}>
+    INMATE DATABASE 
   </h1>
 </div>
-<br/>
+{/* <br/> */}
   <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
       <label>
         <Chip

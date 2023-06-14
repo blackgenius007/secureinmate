@@ -1,5 +1,25 @@
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* overflow-x: hidden; Hide the horizontal scrollbar */
+}
+
 .App {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.footer {
+  flex-shrink: 0;
 }
 
 .App-logo {
@@ -242,4 +262,12 @@ button:hover {
   font-weight: bold;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Paytone+One&display=swap');
+.headfont{
+  font-family: 'Paytone One', sans-serif;
+}
 
+.fontheader{
+
+  font-family: 'Syncopate', sans-serif;
+}

@@ -123,6 +123,10 @@ Penitentiary: {
       type: String,
       required: false,
     },
+    public_id: {
+      type: String,
+      required: false,
+    },
     fingerprint: {
       type: String,
       required: false,

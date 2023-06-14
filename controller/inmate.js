@@ -16,8 +16,9 @@ exports.createNewInmate = asyncHandler(async (req, res, next) => {
   const _id = req.params.id;
 const {
     inmate_name,
-    dateOfBirth,
+    date_of_birth,
     gender,
+    offence_category,
     socialSecurityNumber,
     raceEthnicity,
     nationality,
@@ -25,8 +26,8 @@ const {
     contactInformation,
     height,
     weight,
-    eyeColor,
-    hairColor,
+    eye_color,
+    hair_color,
     distinguishingMarks,
     disabilities,
     bookingDateTime,
@@ -54,15 +55,17 @@ const {
     // Generate unique number for new inmate
     const d = new Date();
     const year = d.getFullYear();
-    const { Penitentiary, email } = pool;
-    const inmate_number = `${Penitentiary.slice(0, 3)}-${year}-${GenerateCode(6)}`;
+    const { Penitentiary, user_name} = pool;
+    const inmate_number = `${Penitentiary.slice(0, 3)}-${year.toString().slice(-2)}-${GenerateCode(3)}`;
+    // const inmate_number = `${Penitentiary.slice(0, 3)}-${year}-${GenerateCode(3)}`;
 
     const inmate = new Inmate({
       inmate_name,
       Penitentiary,
-      reg_officer: email,
+      offence_category,
+      reg_officer: user_name,
       inmate_number,
-      date_of_birth: dateOfBirth,
+      date_of_birth,
       gender,
       social_security: socialSecurityNumber,
       ethnicity: raceEthnicity,
@@ -71,8 +74,8 @@ const {
       contact_information: contactInformation,
       height,
       weight,
-      eye_color: eyeColor,
-      hair_color: hairColor,
+      eye_color: eye_color,
+      hair_color: hair_color,
       scar: distinguishingMarks,
       disability: disabilities,
       bookingDate: bookingDateTime,
@@ -241,21 +244,24 @@ exports.getOneInmate = asyncHandler(async (req, res, next) => {
 //@routes Get/api/v1/update/inmate/:num
 //@acess  Private
 exports.updateInmate = asyncHandler(async (req, res, next) => {
+  console.log(req.body)
+  console.log(req.params._id);
+ const  _id = req.params.id
   try {
-    console.log(req.params.num);
-    const inmateNum = await Inmate.findOne({ inmate_number: req.params.num });
+   
+    const Id = await Inmate.findOne({ _id });
 
-    if (!inmateNum) {
+    if (!Id) {
       return next(
         new ErrorResponse(
-          `No inmate with the inmate number of ${req.params.num}`
+          `No inmate with the inmate number of ${req.params._id}`
         ),
         404
       );
     }
 
     const inmateDetail = await Inmate.findOneAndUpdate(
-      { inmate_number: req.params.num },
+      { _id },
       req.body,
       {
         new: true,
@@ -276,20 +282,21 @@ exports.updateInmate = asyncHandler(async (req, res, next) => {
 // @route DELETE /api/v1/inmate/delete/:id
 // @access Private
 exports.deleteInmate = asyncHandler(async (req, res, next) => {
+  const _id=req.params.id
   try {
-    console.log('delete id =>', req.params.num);
-    const inmate = await Inmate.findOne({ inmate_number: req.params.num });
+    console.log('delete id =>', req.params.id);
+    const inmate = await Inmate.findOne({_id });
 
     if (!inmate) {
       return next(
         new ErrorResponse(
-          `No inmate with the inmate number of ${req.params.num}`
+          `No inmate with the inmate number of ${req.params.id}`
         ),
         404
       );
     }
 
-    await Inmate.findOneAndDelete({ inmate_number: req.params.num });
+    await Inmate.findOneAndDelete({ _id });
 
     res.status(200).json({
       success: true,
