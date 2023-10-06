@@ -35,7 +35,6 @@ const {
     bookingOfficer,
     arrestingAgency,
     arrestingOfficer,
-    reasonForArrest,
     arrestDate,
     arrestLocation,
     arrestJurisdiction,
@@ -55,16 +54,16 @@ const {
     // Generate unique number for new inmate
     const d = new Date();
     const year = d.getFullYear();
-    const { Penitentiary, user_name} = pool;
-    const inmate_number = `${Penitentiary.slice(0, 3)}-${year.toString().slice(-2)}-${GenerateCode(3)}`;
+    const { organizationName, ownerEmail } = pool;
+    const inmate_number = `${organizationName.slice(0, 3)}-${year.toString().slice(-2)}-${GenerateCode(3)}`;
     // const inmate_number = `${Penitentiary.slice(0, 3)}-${year}-${GenerateCode(3)}`;
 
     const inmate = new Inmate({
       inmate_name,
-      Penitentiary,
-      offence_category,
-      reg_officer: user_name,
+      organizationName,
+      offence_category,  
       inmate_number,
+      ownerEmail,
       date_of_birth,
       gender,
       social_security: socialSecurityNumber,
@@ -84,8 +83,9 @@ const {
       booking_time: bookingDateTime,
       arresting_agency: arrestingAgency,
       arrest_location: arrestLocation,
+      arrestJurisdiction,
       arrestDate,
-      verdict: reasonForArrest,
+      bookingNumber,
       belongings: personalItems,
     });
 
@@ -100,125 +100,19 @@ const {
     next(new ErrorResponse('Cannot create inmate'));
   }
 });
-
-
-
-// exports.createNewInmate = asyncHandler(async (req, res, next) => {
-//   console.log(req.body);
-//   console.log(req.params.id);
-//   const _id = req.params.id;
-//   const {
-//     inmate_name,
-//     reg_officer,
-//     arrest_officer,
-//     offence_category,
-//     gender,
-//     date_of_birth,
-//     ethnicity,
-//     social_security,
-//     phone_number,
-//     height,
-//     weight,
-//     eye_color,
-//     hair_color,
-//     scar,
-//     medical_condition,
-//     disability,
-//     inmate_number,
-//     id_number,
-//     bookingDate,
-//     booking_officer,
-//     arrest_oficer,
-//     booking_time,
-//     arresting_agency,
-//     arrest_location,
-//     arrest_time,
-//     arrestDate,
-//     verdict,
-//     sentencing_court,
-//     belongings,
-//     ImagePath,
-//     fingerprint,
-//     endDate,
-//     isActive,
-//   } = req.body;
-
-//   try {
-//     console.log('request from front =>', req.body);
-//     const pool = await User.findOne({ _id });
-
-//     console.log('pool content=>', pool);
-
-//     if (!pool) {
-//       return res.status(404).json({ error: 'Pool not found' });
-//     }
-
-//     // Generate unique number for new inmate
-//     // const d = new Date();
-//     // const year = d.getFullYear();
-//     // const { Penitentiary, email } = pool;
-//     // const InmateCoded = `${Penitentiary.slice(0, 3)}-${year}-${GenerateCode(
-//     //   3
-//     // )}`;
-
-//     const inmateDetails = new Inmate({
-//       inmate_name: inmate_name,
-//       Penitentiary: Penitentiary,
-//       reg_officer: email,
-//     //  inmate_number: InmateCoded,
-//       offence_category: offence_category,
-//       date_of_birth: date_of_birth,
-//       ethnicity: ethnicity,
-//       social_security: social_security,
-//       phone_number: phone_number,
-//       height: height,
-//       weight: weight,
-//       eye_color: eye_color,
-//       hair_color: hair_color,
-//       scar: scar,
-//       medical_condition: medical_condition,
-//       disability: disability,
-//       bookingDate: bookingDate,
-//       booking_officer: booking_officer,
-//       arrest_officer: arrest_officer,
-//       booking_time: booking_time,
-//       arresting_agency: arresting_agency,
-//       arrest_location: arrest_location,
-//       arrest_time: arrest_time,
-//       arrestDate: arrestDate,
-//       verdict: verdict,
-//       id_number: id_number,
-//       sentencing_court: sentencing_court,
-//       belongings: belongings,
-//       ImagePath: ImagePath,
-//       fingerprint: fingerprint,
-//       endDate: endDate,
-//       isActive: isActive,
-//     });
-
-//     // console.log(`pool before save ${inmate}`);
-//     await inmateDetails.save();
-
-//     console.log('added inmate successfully!');
-//     res.send(inmateDetails);
-//   } catch (err) {
-//     console.log(err);
-//     // res.status(500).json({ error: 'Internal server error' });
-//     next(new ErrorResponse('cannot create inmate'));
-//   }
-// });
-
-//@desc Get all inmate by user email
-//@routes Get/api/v1/inmate/all
-//@acess Public
+ 
+// @desc Get inmates with ownersEmail
+//@routes /api/v1/inmate/:iownerEmail
+//@acess Private
 exports.getAllInmate = asyncHandler(async (req, res, next) => {
+  console.log('from front:',req.params.ownerEmail)
   try {
-    const facility_name = req.body.facility_name;
-    const inmates = await Inmate.find({ facility_name });
+    const ownerEmail = req.params.ownerEmail;
+    const inmates = await Inmate.find({ ownerEmail  });
     res.json(inmates);
   } catch (err) {
     console.log(err);
-    next(new ErrorResponse('cannot retrieve all inmate', 404));
+    next(new ErrorResponse('Database error', 404));
   }
 });
 
@@ -306,3 +200,101 @@ exports.deleteInmate = asyncHandler(async (req, res, next) => {
     next(new ErrorResponse('Internal server error', 500));
   }
 });
+
+// @desc Employee Photos
+//@acess Private
+exports.createInmatePhoto = asyncHandler(async (req, res, next) => {
+
+  console.log('potos...')
+  const _id = req.params ;
+
+  console.log('inmate detail=>' );
+
+  //check for existing image
+  // Inmate.findOne({ _id }, function (err, id) {
+  //   // console.log('image-Id=>', id);
+
+  //   if (err) {
+  //     console.log(err);
+  //     //lf there is an existing image delete from cloudinary
+  //   } else if (id.public_id) {
+  //     const { public_id } = id;
+  //     cloudinary.v2.uploader.destroy(
+  //       public_id && public_id,
+  //       { type: 'upload', resource_type: 'image' },
+  //       function (error, result) {
+  //         if (error) {
+  //           console.log('err', error);
+  //         } else {
+  //           // res.send(result)
+  //           console.log('Asset deleted from cloudinary');
+  //         }
+  //       }
+  //     );
+  //     //upload assets  after destroying asset in cloudinary
+  //     cloudinary.uploader.upload(req.file.path, (result) => {
+  //       console.log(result);
+  //       if (!result) {
+  //         return res.status(500).send('Error No File Selected');
+  //       } else {
+  //         // If Success
+  //         const { secure_url, public_id, original_filename } = result;
+  //         Inmate.findOneAndUpdate(
+  //           {
+  //             _id: _id,
+            
+  //           },
+  //           { $set: { imagePath: secure_url, public_id: public_id } },
+  //           {
+  //             new: true,
+  //             fields: {
+  //               imagePath: 1,
+  //             },
+  //           }
+  //         ).exec((err, results) => {
+  //           if (err) throw err;
+  //           res.json(results);
+  //           console.log('uploaded successfully');
+  //         });
+  //       }
+  //     });
+  //   } else {
+  //     //upload process if asset doesn't exist in database
+  //     cloudinary.uploader.upload(req.file.path, (result) => {
+  //       console.log(result);
+  //       if (!result) {
+  //         return res.status(500).send('Error No File Selected');
+  //       } else {
+  //         // If Success
+  //         const { secure_url, public_id, original_filename } = result;
+  //       Inmate.findOneAndUpdate(
+  //           {
+  //             _id: _id,
+          
+  //           },
+  //           { $set: { imagePath: secure_url, public_id: public_id } },
+  //           {
+  //             new: true,
+  //             fields: {
+  //               imagePath: 1,
+  //             },
+  //           }
+  //         ).exec((err, results) => {
+  //           if (err) throw err;
+  //           res.json(results);
+  //           console.log('Asset updated successfully');
+  //         });
+  //       }
+  //     });
+  //   }
+  // });
+});
+
+
+
+
+
+
+
+
+

@@ -1,274 +1,81 @@
 const path = require('path');
 const ErrorResponse = require('../utils/errorResponse.js');
 const asyncHandler = require('../middleware/async');
-const Inmate = require('../models/Inmates');
+const Inmate = require('../models/Inmates.js'); 
 const cloudinary = require('../routes/api/imagesRoute/utils/cloudinary');
+const upload = require('../routes/api/imagesRoute/utils/multer');
 
-// @desc Employee Photos
+ // @desc Employee Photos
 //@acess Private
-exports.createInmatePhoto = asyncHandler(async (req, res, next) => {
-  const _id = req.params.id;
+// exports.employeePhotoso = asyncHandler(async (req, res, next) => {
 
-  console.log('inmate detail=>', _id);
+//   console.log(req.file)
+//   try {
+//     const result = await cloudinary.uploader.upload(req.file.path);
+//     const imageUrl = result.secure_url;
 
-  //check for existing image
-  Inmate.findOne({ _id }, function (err, id) {
-    // console.log('image-Id=>', id);
+//     // Update the inmate's imagePath field in the database
+//     const inmateId = req.params.inmateId;
+//     await Inmate.findByIdAndUpdate(inmateId, { imagePath: imageUrl });
 
-    if (err) {
-      console.log(err);
-      //lf there is an existing image delete from cloudinary
-    } else if (id.public_id) {
-      const { public_id } = id;
-      cloudinary.v2.uploader.destroy(
-        public_id && public_id,
-        { type: 'upload', resource_type: 'image' },
-        function (error, result) {
-          if (error) {
-            console.log('err', error);
-          } else {
-            // res.send(result)
-            console.log('Asset deleted from cloudinary');
-          }
-        }
-      );
-      //upload assets  after destroying asset in cloudinary
-      cloudinary.uploader.upload(req.file.path, (result) => {
-        console.log(result);
-        if (!result) {
-          return res.status(500).send('Error No File Selected');
-        } else {
-          // If Success
-          const { secure_url, public_id, original_filename } = result;
-          Inmate.findOneAndUpdate(
-            {
-              _id: _id,
-            
-            },
-            { $set: { imagePath: secure_url, public_id: public_id } },
-            {
-              new: true,
-              fields: {
-                imagePath: 1,
-              },
-            }
-          ).exec((err, results) => {
-            if (err) throw err;
-            res.json(results);
-            console.log('uploaded successfully');
-          });
-        }
-      });
-    } else {
-      //upload process if asset doesn't exist in database
-      cloudinary.uploader.upload(req.file.path, (result) => {
-        console.log(result);
-        if (!result) {
-          return res.status(500).send('Error No File Selected');
-        } else {
-          // If Success
-          const { secure_url, public_id, original_filename } = result;
-        Inmate.findOneAndUpdate(
-            {
-              _id: _id,
-          
-            },
-            { $set: { imagePath: secure_url, public_id: public_id } },
-            {
-              new: true,
-              fields: {
-                imagePath: 1,
-              },
-            }
-          ).exec((err, results) => {
-            if (err) throw err;
-            res.json(results);
-            console.log('Asset updated successfully');
-          });
-        }
+//     res.json({ imageUrl });
+//   } catch (error) {
+//     console.error('Error:', error);
+//     console.error('Stack trace:', error.stack);
+//     return res.status(500).send('Internal Server Error');
+//   }
+
+// })
+
+
+
+
+
+exports.employeePhotos = asyncHandler(async (req, res, next) => {
+  const _id = req.params.inmateId;
+
+  console.log('Inmate detail:', _id);
+  console.log('Inmate detail:', req.file);
+
+  try {
+    // Check for existing image
+    const inmate = await Inmate.findById(_id);
+
+    if (!inmate) {
+      return res.status(404).json({ success: false, message: 'Inmate not found' });
+    }
+
+    if (inmate.public_id) {
+      // Delete existing image from cloudinary
+      await cloudinary.v2.uploader.destroy(inmate.public_id, {
+        type: 'upload',
+        resource_type: 'image'
       });
     }
-  });
+
+    // Upload new image to cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path);
+console.log(result)
+    if (!result) {
+      return res.status(500).send('Error uploading file to Cloudinary');
+    }
+
+    const { secure_url, public_id } = result;
+
+    // Update inmate's imagePath and public_id
+    await Inmate.findByIdAndUpdate(
+      _id,
+      { imagePath: secure_url, public_id: public_id },
+      { new: true, fields: { imagePath: 1 } }
+    );
+
+    res.json({
+      success: true,
+      message: 'Image uploaded and inmate details updated successfully',
+      imagePath: secure_url
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('Internal Server Error');
+  }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const path = require('path');
-// const ErrorResponse = require('../utils/errorResponse.js');
-// const asyncHandler = require('../middleware/async');
-// const User = require('../models/User');
-// const Inmate = require('../models/Inmates');
-// const cloudinary = require('../utils/cloudinary.js');
-
-
-
-// exports.InmatePhotos = asyncHandler(async (req, res, next) => {
-//   // const _id = 
-//   // console.log('Inmate details=>', _id);
-
-//   try {
-//     // Check for existing image
-//     const inmate = await Inmate.findOne({ _id:'647f1011be551bfdcd5f0cee' });
-
-//     if (!inmate) {
-//       return res.status(404).json({
-//         success: false,
-//         error: 'Inmate not found',
-//       });
-//     }
-
-//     // If an image exists, delete it from cloudinary
-//     if (inmate.public_id) {
-//       const { public_id } = inmate;
-//       await cloudinary.v2.uploader.destroy(public_id, {
-//         type: 'upload',
-//         resource_type: 'image',
-//       });
-//       console.log('Asset deleted from cloudinary');
-//     }
-
-//     // Upload new asset to cloudinary
-//     const result = await cloudinary.uploader.upload(req.file.path);
-
-//     if (!result) {
-//       return res.status(500).send('Error: No file selected');
-//     }
-
-//     const { secure_url, public_id } = result;
-
-//     // Update inmate record with new image details
-//     const updatedInmate = await Inmate.findByIdAndUpdate(
-//       _id,
-//       { $set: { imagePath: secure_url, public_id: public_id } },
-//       { new: true, fields: { imagePath: 1 } }
-//     );
-
-//     res.json(updatedInmate);
-//     console.log('Asset updated successfully');
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).json({
-//       success: false,
-//       error: 'Server error',
-//     });
-//   }
-// });
-
-
-
-
-
-
-
-
-// const path = require('path');
-// const ErrorResponse = require('../utils/errorResponse.js');
-// const asyncHandler = require('../middleware/async');
-// const User = require('../models/User');
-// const Inmate = require('../models/Inmates');
-// const cloudinary = require('../utils/cloudinary.js');
-
-
-
-// // @desc Inmate Photos
-// //@acess Private
-// exports.InmatePhotos = asyncHandler(async (req, res, next) => {
-//     const _id = req.params.id;
-//     console.log('Inmate details=>', _id);
-  
-//     //check for existing image
-//   Inmate.findOne({ _id }, function (err, id) {
-//       // console.log('image-Id=>', id);
-  
-//       if (err) {
-//         console.log(err);
-//         //lf there is an existing image delete from cloudinary
-//       } else if (id.public_id) {
-//         const { public_id } = id;
-//         cloudinary.v2.uploader.destroy(
-//           public_id && public_id,
-//           { type: 'upload', resource_type: 'image' },
-//           function (error, result) {
-//             if (error) {
-//               console.log('err', error);
-//             } else {
-//               // res.send(result)
-//               console.log('Asset deleted from cloudinary');
-//             }
-//           }
-//         );
-//         //upload assets  after destroying asset in cloudinary
-//         cloudinary.uploader.upload(req.file.path, (result) => {
-//           console.log(result);
-//           if (!result) {
-//             return res.status(500).send('Error No File Selected');
-//           } else {
-//             // If Success
-//             const { secure_url, public_id, original_filename } = result;
-//             Inmate.findOneAndUpdate(
-//               { 
-//                 _id: _id,
-//                 },
-//               { $set: { imagePath: secure_url, public_id: public_id } },
-//               {
-//                 new: true,
-//                 fields: {
-//                   imagePath: 1,
-//                 },
-//               }
-//             ).exec((err, results) => {
-//               if (err) throw err;
-//               res.json(results);
-//               console.log('uploaded successfully');
-//             });
-//           }
-//         });
-//       } else {
-//         //upload process if asset doesn't exist in database
-//         cloudinary.uploader.upload(req.file.path, (result) => {
-//           console.log(result);
-//           if (!result) {
-//             return res.status(500).send('Error No File Selected');
-//           } else {
-//             // If Success
-//             const { secure_url, public_id, original_filename } = result;
-//            Inmate.findOneAndUpdate(
-//               {
-//                 _id: _id,
-             
-//               },
-//               { $set: { imagePath: secure_url, public_id: public_id } },
-//               {
-//                 new: true,
-//                 fields: {
-//                   imagePath: 1,
-//                 },
-//               }
-//             ).exec((err, results) => {
-//               if (err) throw err;
-//               res.json(results);
-//               console.log('Asset updated successfully');
-//             });
-//           }
-//         });
-//       }
-//     });
-//   });
-  

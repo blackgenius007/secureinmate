@@ -14,7 +14,7 @@ const {
 } = require('../controller/inmate');
 
  router.route('/create/:id').post(createNewInmate);
- router.route('/inmates').get(getAllInmate);
+ router.route('/inmates/:ownerEmail').get(getAllInmate);
  router.route('/detail/:id').get(getOneInmate);
  router.route('/update-1/:id/').post(updateInmate);
  router.route('/delete/:id').delete(deleteInmate);

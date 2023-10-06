@@ -7,7 +7,7 @@ const OffencesSchema = mongoose.Schema(
         required: false,
       },
   
-    offence: {
+    offence: {     
       type: mongoose.Types.ObjectId,
       ref: 'Employee',
     },

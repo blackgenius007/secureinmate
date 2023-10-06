@@ -7,7 +7,12 @@ const InmateSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-Penitentiary: {
+    ownerEmail: {
+      type: String,
+      required: true,
+    },
+    
+    organizationName: {
       type: String,
       required: false,
     },
@@ -15,7 +20,11 @@ Penitentiary: {
       type: String,
       required: false,
     },
-       offence_category: {
+    status: {
+      type: String,
+      required: false,
+    },
+     offence_category: {
       type: String,
       required: true,
     },
@@ -103,11 +112,16 @@ Penitentiary: {
       type: String,
       required: false,
     },
+    bookingNumber: {
+      type: String,
+      required: false,
+    },
+  
     arrestDate: {
       type: String,
       required: false,
     },
-    verdict: {
+    arrestJurisdiction: {
       type: String,
       required: false,
     },
@@ -119,7 +133,7 @@ Penitentiary: {
       type: String,
       required: false,
     },
-    ImagePath: {
+    imagePath: {
       type: String,
       required: false,
     },
