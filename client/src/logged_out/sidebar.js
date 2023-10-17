@@ -56,7 +56,7 @@ const Sidebar = ({ handleLogout, isOpen, toggleDrawer }) => {
               { text: 'Create new Inmate ', path: 'new', icon: <AccountBalanceIcon /> },
               { text: 'View Inmates', path: 'inmates', icon: <PeopleIcon /> },
               { text: 'Visitation matrix', path: 'visits', icon: <VisitIcon /> },
-              { text: 'Case files', path: 'files', icon: <CaseFileIcon /> },
+              { text: 'Case files', path: 'case', icon: <CaseFileIcon /> },
               { text: 'Inventory', path: 'request', icon: <AssignmentIcon /> },
               { text: 'Settings', icon: <SettingsIcon /> },
             ].map((item, index) => (

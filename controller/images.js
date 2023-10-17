@@ -30,7 +30,7 @@ const upload = require('../routes/api/imagesRoute/utils/multer');
 
 
 
-
+  
 exports.employeePhotos = asyncHandler(async (req, res, next) => {
   const _id = req.params.inmateId;
 
@@ -38,8 +38,8 @@ exports.employeePhotos = asyncHandler(async (req, res, next) => {
   console.log('Inmate detail:', req.file);
 
   try {
-    // Check for existing image
-    const inmate = await Inmate.findById(_id);
+    // Check for existing image 
+    const inmate = await Inmate.findById(_id );
 
     if (!inmate) {
       return res.status(404).json({ success: false, message: 'Inmate not found' });

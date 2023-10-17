@@ -24,7 +24,7 @@ const register = asyncHandler(async (req, res) => {
     email,
     contactNumber,
     password,
-    ownerId,
+    ownerId,   
     ownerEmail,
     country,
   } = req.body;
